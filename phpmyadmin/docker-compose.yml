@@ -1,16 +1,36 @@
 version: '3.1'
 
+networks:
+  # enable connection with Traefik
+  traefik:
+    external: true
+  # network for the app
+  backend:
+    external: true
+ 
 services:
-  db:
-    image: mariadb:10.5
-    restart: always
-    env_file:
-      - pma.env
-
-  phpmyadmin:
+  app:
     image: phpmyadmin
     restart: always
-    ports:
-      - 9090:80
+    networks:
+      - traefik
+      - backend
     environment:
       - PMA_ARBITRARY=1
+      - PMA_ABSOLUTE_URI=https://pma.test
+    labels:
+      # The labels are useful for Traefik only
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      # Get the routes from http
+      - "traefik.http.routers.phpmyadmin.rule=Host(`pma.test`)"      
+      - "traefik.http.routers.phpmyadmin.entrypoints=web"      
+      # Redirect these routes to https
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.phpmyadmin.middlewares=redirect-to-https@docker"
+      # Get the routes from https
+      - "traefik.http.routers.phpmyadmin-secured.rule=Host(`pma.test`)"
+      - "traefik.http.routers.phpmyadmin-secured.entrypoints=web-secure"
+      # Apply autentificiation with http challenge
+      - "traefik.http.routers.phpmyadmin-secured.tls=true"
+      - "traefik.http.routers.phpmyadmin-secured.tls.certresolver=myhttpchallenge"      
