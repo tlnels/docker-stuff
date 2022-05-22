@@ -20,7 +20,7 @@ services:
         max-file: "3"
     environment:
       # Connect WordPrerss to the database
-      WORDPRESS_DB_HOST: wpdbhost.internal:3306
+      WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: wordpressuser
       WORDPRESS_DB_PASSWORD: changeme
       WORDPRESS_DB_NAME: wordpressdb

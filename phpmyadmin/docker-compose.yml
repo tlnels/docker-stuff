@@ -4,8 +4,10 @@ networks:
   # enable connection with Traefik
   traefik:
     external: true
-  # network for the app
+  # network for the apps to reach
   backend:
+    external: true
+  nextcloud:
     external: true
  
 services:
@@ -15,6 +17,7 @@ services:
     networks:
       - traefik
       - backend
+      - nextcloud
     environment:
       - PMA_ARBITRARY=1
       - PMA_ABSOLUTE_URI=https://pma.test

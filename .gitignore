@@ -1,0 +1,6 @@
+# Ignore database and app data folders
+db/
+data/
+
+# Ignore Let's Encrypt Certs
+letsencrypt/

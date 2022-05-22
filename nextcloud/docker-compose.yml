@@ -5,7 +5,7 @@ networks:
   traefik:
     external: true
   # network for the app
-  backend:
+  nextcloud:
     external: true
     
 services:
@@ -15,26 +15,45 @@ services:
     restart: always
     volumes:
       - db:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=
     env_file:
       - db.env
+    networks:
+      - nextcloud
 
   redis:
     image: redis:alpine
     restart: always
+    networks:
+      - nextcloud
 
   app:
     image: nextcloud:apache
     restart: always
     volumes:
-      - data:/var/www/html
+      - testdata:/var/www/html
     environment:
-      - VIRTUAL_HOST=eos.zoness.me
-      - LETSENCRYPT_HOST=eos.zoness.me
-      - LETSENCRYPT_EMAIL=trevor@tlnprojects.com
+      - VIRTUAL_HOST=nc.test
+      - LETSENCRYPT_HOST=nc.test
+      - LETSENCRYPT_EMAIL=test@email.com
       - MYSQL_HOST=db
       - REDIS_HOST=redis
+    labels:
+      # TODO: UPDATE THESE BEFORE DOING ANYTHING
+      # The labels are useful for Traefik only
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      # Get the routes from http
+      - "traefik.http.routers.nextcloud.rule=Host(`nc.test`)"
+      - "traefik.http.routers.nextcloud.entrypoints=web"
+      # Redirect these routes to https
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.nextcloud.middlewares=redirect-to-https@docker"
+      # Get the routes from https
+      - "traefik.http.routers.nextcloud-secured.rule=Host(`nc.test`)"
+      - "traefik.http.routers.nextcloud-secured.entrypoints=web-secure"
+      # Apply autentificiation with http challenge
+      - "traefik.http.routers.nextcloud-secured.tls=true"
+      - "traefik.http.routers.nextcloud-secured.tls.certresolver=myhttpchallenge"
     env_file:
       - db.env
     depends_on:
@@ -42,24 +61,32 @@ services:
       - redis
     networks:
       - traefik
-      - backend
+      - nextcloud
 
   cron:
     image: nextcloud:apache
     restart: always
     volumes:
-      - data:/var/www/html
+      - testdata:/var/www/html
     entrypoint: /cron.sh
     depends_on:
       - db
       - redis
+    networks:
+      - nextcloud
 
 volumes:
   db:
-  data:
-    driver: local-persist
+  #data:
+  #  driver: local-persist
+  #  driver_opts:
+  #    mountpoint: /mnt/blockstorage/nextcloud
+  testdata:
+    driver: local
     driver_opts:
-      mountpoint: /mnt/blockstorage/nextcloud
+      type: none
+      o: bind
+      device: ./db
   certs:
   acme:
   vhost.d:
