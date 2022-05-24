@@ -17,7 +17,7 @@ Lessons learned:
 
 ## Issues and Workarounds
 1. SVG Support Missing
-	* Enter the container with `docker exec CONTAINERID -it /bin/bash` and `apt install libmagickcore-6.q16-6-extra`
+	* Enter the container with `docker exec -it CONTAINERID /bin/bash` and `apt install libmagickcore-6.q16-6-extra`
 2. Mounted volume (block storage) not being chosen
 	* Install `local-persist` docker plugin, reference it in the volume config (specified in the current compose manifest already)
 3. Default phone region missing
