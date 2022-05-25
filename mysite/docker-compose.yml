@@ -18,12 +18,8 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    environment:
-      # Connect WordPrerss to the database
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: wordpressuser
-      WORDPRESS_DB_PASSWORD: changeme
-      WORDPRESS_DB_NAME: wordpressdb
+    env_file:
+      - db.env
     volumes:
       # save the content of WordPress an enable local modifications
       - ./wordpress/data:/var/www/html
