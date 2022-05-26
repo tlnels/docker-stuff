@@ -10,6 +10,7 @@ services:
   traefik:
     image: traefik:v2.6
     container_name: "traefik"
+    restart: always
     logging:
       options:
         max-size: "10m"
@@ -24,7 +25,7 @@ services:
       - "--providers.docker.exposedbydefault=false"
       # Settle the ports for the entry points
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.web-secure.address=:443"      
+      - "--entrypoints.web-secure.address=:443"
       # Settle the autentification method to http challenge
       - "--certificatesresolvers.myhttpchallenge.acme.httpchallenge=true"
       - "--certificatesresolvers.myhttpchallenge.acme.httpchallenge.entrypoint=web"
