@@ -1,0 +1,21 @@
+version: '3.2'
+services:
+  redbot:
+    container_name: redbot
+    image: phasecorex/red-discordbot
+    restart: unless-stopped
+    volumes:
+      - redbot:/data
+    environment:
+      - TOKEN=YOUR TOKEN HERE
+      - PREFIX=.
+      - TZ=America/Chicago
+      - PUID=1000
+volumes:
+  redbot:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./redbot
+
