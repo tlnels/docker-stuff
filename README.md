@@ -14,6 +14,7 @@ Lessons learned:
 # Wordpress
 Lessons learned:
 * For small sites, probably its just easiest to load the database and data files right in the compose directory. The `.gitignore` has been updated to ignore these folders based on my conventions.
+* My blog is small enough that reinstalling into a new database and importing the post XML was easier than restoring from DB which seemed to fail because of the lack of dockerization and missing files.
 
 ## Issues and Workarounds
 1. SVG Support Missing
@@ -32,5 +33,5 @@ Lessons learned:
 Lessons learned:
 * Database containers should really be 1:1 to apps, therefore its useful to create external `networks` for the apps you want to look at in PhpMyAdmin. After these networks exist externally, then you can add the relevant networks to the `docker-compose.yml` of this app (already done, for today's apps).
 
-# OpenVPN AS
-N/A
+# Wireguard
+Trivial configuration with image, just see the [external documentation](https://github.com/linuxserver/docker-wireguard) and [this guide](https://www.the-digital-life.com/wireguard-docker/).
